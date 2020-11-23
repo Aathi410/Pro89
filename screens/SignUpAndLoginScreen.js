@@ -21,8 +21,8 @@ export default class SignUpAndLoginScreen extends React.Component{
     
     userLogin = (username,password) => {
         firebase.auth().signInWithEmailAndPassword(username,password)
-        .then(()=>{
-          return Alert.alert('User Login Successful');
+        .then((Response)=>{
+          this.props.navigation.navigate('Home')
         })
         .catch((error)=>{
           var errorCode = error.code
@@ -171,7 +171,10 @@ export default class SignUpAndLoginScreen extends React.Component{
     render(){
         return(
             <View style={styles.container}>
-              
+
+                {
+                  this.showModal()
+                }
                 <Text style={styles.title}>Barter App</Text>
             
                 <View style={styles.profileContainer}>

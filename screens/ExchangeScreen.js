@@ -24,7 +24,7 @@ export default class BookRequestScreen extends React.Component{
         var randomRequestId = this.createUniqueId();
         db.collection('exchange_requests').add({
             'username':userId,
-            'item_name':ItemName,
+            'item_name':itemName,
             'description':description,
         })
         this.setState({
@@ -36,7 +36,7 @@ export default class BookRequestScreen extends React.Component{
             '',
             [
                 {text: 'OK', onPress: () => {
-                    this.props.navigation.navigate('HomeScreen')
+                    this.props.navigation.navigate('Home')
                 }}
             ]
         );
