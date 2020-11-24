@@ -21,11 +21,12 @@ export default class BookRequestScreen extends React.Component{
 
     addItem = (itemName,description)=>{
         var userId = this.state.userId
-        var randomRequestId = this.createUniqueId();
+        var exchangeId = this.createUniqueId();
         db.collection('exchange_requests').add({
-            'username':userId,
+            'user_name':userId,
             'item_name':itemName,
             'description':description,
+            "exchangeId"  : exchangeId
         })
         this.setState({
             itemName:'',
@@ -36,7 +37,7 @@ export default class BookRequestScreen extends React.Component{
             '',
             [
                 {text: 'OK', onPress: () => {
-                    this.props.navigation.navigate('Home')
+                    this.props.navigation.navigate('BarterList')
                 }}
             ]
         );
