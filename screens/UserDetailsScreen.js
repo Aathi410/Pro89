@@ -17,7 +17,8 @@ export default class UserDetailsScreen extends React.Component{
       recieverName    : '',
       recieverContact : '',
       recieverAddress : '',
-      recieverRequestDocId : ''
+      recieverRequestDocId : '',
+      userName : '',
     }
   }
 
@@ -50,8 +51,34 @@ updateBarterStatus=()=>{
   })
 }
 
+getUserDetails=(username)=>{
+  db.collection("users").where('email_id','==', username).get()
+  .then((snapshot)=>{
+    snapshot.forEach((doc) => {
+      console.log(doc.data().first_name);
+      this.setState({
+        userName  :doc.data().first_name + " " + doc.data().last_name
+      })
+    })
+  })
+}
+
+addNotification = () =>{
+  var message = this.state.userName + " Has Shown Interest In Donationg The Item";
+  db.collection("all_notifications").add({
+    targeted_user_id : this.state.receiverId,
+    donor_id : this.state.username,
+    exchange_id : this.state.exchangeId,
+    item_name : this.state.itemName,
+    date : firebase.firestore.FieldValue.serverTimestamp(),
+    notification_status : "unread",
+    message : message,
+  })
+}
+
 componentDidMount(){
   this.getRecieverDetails()
+  this.getUserDetails(this.state.username)
 }
 
   render(){
@@ -103,9 +130,10 @@ componentDidMount(){
                   style={styles.button}
                   onPress={()=>{
                     this.updateBarterStatus()
+                    this.addNotification()
                     this.props.navigation.navigate('MyBarters')
                   }}>
-                <Text>I want to Exchange</Text>
+                <Text>I Want To Exchange</Text>
               </TouchableOpacity>
             )
             : null

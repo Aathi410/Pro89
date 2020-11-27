@@ -12,25 +12,80 @@ export default class MyBartersScreen extends Component {
     super()
     this.state = {
         username: firebase.auth().currentUser.email,
-        allBarters : []
+        allBarters : [],
+        donorName : '',
     }
     this.requestRef= null
     }
 
 
-   getallBarters =()=>{
-     this.requestRef = db.collection("all_Barters").where("donor_id" ,'==', this.state.username)
-     .onSnapshot((snapshot)=>{
-       var allBarters = snapshot.docs.map(document => document.data());
-       this.setState({
-         allBarters : allBarters,
-       });
-     })
+    getAllBarters =()=>{
+      this.requestRef = db.collection("all_Barters")
+      .where("donor_id" ,'==', this.state.username)
+      .onSnapshot((snapshot)=>{
+        var allBarters = []
+         snapshot.docs.map((doc)=>{
+           var barters = doc.data()
+           barters['doc_id'] = doc.id
+           allBarters.push(barters)
+         })
+        this.setState({
+          allBarters : allBarters,
+        });
+      })
+    }
+
+   getDonorDetais =(username)=>{
+    db.collection('users').where("email_id", "==",username).get()
+    .then((snapshot)=>{
+      snapshot.forEach((doc)=>{
+        this.setState({
+          donorName:doc.data().first_name + " " + doc.data().last_name
+        })
+      })
+    })
    }
 
-   componentDidMount(){
-    this.getallBarters()
-   } 
+   sendItem = (itemDetails) => {
+    if (itemDetails.request_status === "Item Sent"){
+      var requestStatus = "Donor Intersted"
+      db.collection('all_Barters').doc(itemDetails.doc_id).update({
+        request_status:"Donor Interested"
+      })
+      this.sendNotification(itemDetails, requestStatus)
+    }
+
+    else{
+      var requestStatus = "Item Sent"
+      db.collection('all_Barters').doc(itemDetails.doc_id).update({
+        request_status:"Item Sent"
+      })
+      this.sendNotification(itemDetails, requestStatus)
+    }
+   }
+
+   sendNotification =(itemDetails, requestStatus) => {
+     var exchangeId = itemDetails.exchange_id
+     var userName = itemDetails.donor_id 
+     db.collection("all_notifications")
+     .where('exchange_id',"==", exchangeId)
+     .where('donor_id','==',userName).get()
+     .then((snapshot)=>{
+       snapshot.forEach((doc)=>{
+         if(requestStatus === "Item Sent"){
+           message = this.state.donorName + " Sent You The Item"
+         }
+         else{
+          message = this.state.donorName + " Has Shown Interest In Donationg The Item"
+         }
+         db.collection('all_notifications').doc(doc.id).update({
+           message : message,
+           notification_status : "unread",
+           date : firebase.firestore.FieldValue.serverTimestamp()
+         })
+       })
+     })  
+    }
 
    keyExtractor = (item, index) => index.toString()
 
@@ -42,17 +97,35 @@ export default class MyBartersScreen extends Component {
        leftElement={<Icon name="book" type="font-awesome" color ='#696969'/>}
        titleStyle={{ color: 'black', fontWeight: 'bold' }}
        rightElement={
-           <TouchableOpacity style={styles.button}>
-             <Text style={{color:'#ffff'}}>Exchange</Text>
-           </TouchableOpacity>
+        <TouchableOpacity 
+          style={[
+            styles.button,
+            {
+              backgroundColor : item.request_status === "Item Sent" ? "green" : "#ff5722"
+            }
+          ]}
+          onPress={()=>{
+            this.sendItem(item)
+          }}
+          >
+         <Text style={{color:'white'}}>
+           {item.request_status === "Item Sent" ? "Item Sent" : "Send Item"}
+         </Text>
+       </TouchableOpacity>
          }
        bottomDivider
      />
    )
 
+   componentDidMount(){
+    this.getDonorDetais(this.state.username)
+    this.getAllBarters()
+   } 
+
    componentWillUnmount(){
-     this.requestRef();
-   }
+    this.requestRef();
+  }
+
 
    render(){
      return(
