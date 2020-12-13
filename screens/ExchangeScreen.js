@@ -11,6 +11,12 @@ export default class BookRequestScreen extends React.Component{
             userId : firebase.auth().currentUser.email,
             itemName:'',
             description:'',
+            IsBookRequestActive:'',
+            requestedItemName:'',
+            itemStatus:'',
+            exchangeId:'',
+            userDocId:'',
+            docId:'',
 
         }
     }
@@ -19,19 +25,33 @@ export default class BookRequestScreen extends React.Component{
         return Math.random().toString(36).substring(7)
     }
 
-    addItem = (itemName,description)=>{
+    addItem = async (itemName,description)=>{
         var userId = this.state.userId
         var exchangeId = this.createUniqueId();
         db.collection('exchange_requests').add({
             'user_name':userId,
             'item_name':itemName,
             'description':description,
-            "exchangeId"  : exchangeId
+            "exchangeId"  : exchangeId,
+            "item_status" : "requested",
+            "date"       : firebase.firestore.FieldValue.serverTimestamp()
         })
+        await this.getExchangeRequest()
+        db.collection('users').where("user_name","==",userId).get()
+        .then()
+        .then((snapshot)=>{
+            snapshot.forEach((doc)=>{
+                db.collection('users').doc(doc.id).update({
+                    IsExchangeRequestActive: true
+                })
+            })
+        })
+
         this.setState({
             itemName:'',
             description:'',
         })
+
         return Alert.alert(
             'Item Ready To Exchange',
             '',
@@ -42,42 +62,155 @@ export default class BookRequestScreen extends React.Component{
             ]
         );
     }
+
+    receivedItem=(itemName)=>{
+        var userId = this.state.userId
+        var exchangeId = this.state.exchangeId
+        db.collection('received_items').add({
+            "user_name": userId,
+            "item_name":itemName,
+            "exchange_id"  : exchangeId,
+            "itemStatus"  : "received",
+    
+        })
+    }
+
+    getIsExchangeRequestActive(){
+        db.collection('users')
+        .where('user_name','==',this.state.userId)
+        .onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            this.setState({
+              IsExchangeRequestActive:doc.data().IsExchangeRequestActive,
+              userDocId : doc.id
+            })
+          })
+        })
+      }
+    
+    getExchangeRequest =()=>{
+        var exchangeRequest=  db.collection('exchange_requests')
+        .where('user_name','==',this.state.userId).get()
+        .then((snapshot)=>{
+            snapshot.forEach((doc)=>{
+                if(doc.data().item_status !== "received"){
+                    this.setState({
+                        exchangeId : doc.data().exchangeId,
+                        requestedItemName: doc.data().item_name,
+                        itemStatus:doc.data().item_status,
+                        docId     : doc.id
+                    })
+                }
+          })
+        })
+    }
+    
+    sendNotification=()=>{
+        db.collection('users').where('user_name','==',this.state.userId).get()
+        .then((snapshot)=>{
+            snapshot.forEach((doc)=>{
+                var name = doc.data().first_name
+                var lastName = doc.data().last_name
+                db.collection('all_notifications').where('exchange_Id','==',this.state.exchangeId).get()
+                .then((snapshot)=>{
+                    snapshot.forEach((doc) => {
+                        var donorId  = doc.data().donor_id
+                        var itemname =  doc.data().item_name
+                        db.collection('all_notifications').add({
+                            targeted_user_id : donorId,
+                            message : name +" " + lastName + " received the item " + itemName ,
+                            notification_status : "unread",
+                            item_name : itemName
+                        })
+                    })
+                })
+            })
+        })
+    }
+
+    componentDidMount(){
+        this.getExchangeRequest()
+        this.getIsExchangeRequestActive()
+    }
+    
+    updateExchangeRequestStatus=()=>{
+        db.collection('exchange_requests').doc(this.state.docId).update({
+            item_status : 'recieved'
+        })
+        db.collection('users').where('user_name','==',this.state.userId).get()
+        .then((snapshot)=>{
+            snapshot.forEach((doc) => {
+                db.collection('users').doc(doc.id).update({
+                IsExchangeRequestActive: false
+                })
+            })
+        })
+    
+    }
     
     render(){
-        return(
-            <View style={{flex:1}}>
-                <MyHeader title = "Add Item"/>
-                <KeyboardAvoidingView style={styles.keyBoardStyle}>
-                    <TextInput
-                        style={styles.formTextInput}
-                        placeholder='Item Name'
-                        onChangeText={(text)=>{
-                            this.setState({itemName:text})
-                        }}
-                        value = {this.state.itemName}
-                    />
-
-                    <TextInput
-                        style={[styles.formTextInput,{height:300,}]}
-                        multiline
-                        numberOfLines = {8} 
-                        placeholder='Descripition'
-                        onChangeText={(text)=>{
-                            this.setState({description:text})
-                        }}
-                        value = {this.state.description}
-                    />
-
-                    <TouchableOpacity 
-                        style={styles.button}
+        if (this.state.IsExchangeRequestActive === true){
+            return(
+                <View style = {{flex:1,justifyContent:'center'}}>
+                    <View style={{borderColor:"orange",borderWidth:2,justifyContent:'center',
+                            alignItems:'center',padding:10,margin:10}}>
+                        <Text>Item Name</Text>
+                        <Text>{this.state.requestedItemName}</Text>
+                    </View>
+                    <View style={{borderColor:"orange",borderWidth:2,justifyContent:'center',
+                            alignItems:'center',padding:10,margin:10}}>
+                        <Text> Item Status </Text>
+                        <Text>{this.state.itemStatus}</Text>
+                    </View>
+            
+                    <TouchableOpacity style={{borderWidth:1,borderColor:'orange',backgroundColor:"orange",
+                                        width:300,alignSelf:'center',alignItems:'center',height:30,marginTop:30}}
                         onPress={()=>{
-                            this.addItem(this.state.itemName,this.state.description)
+                            this.sendNotification()
+                            this.updateExchangeRequestStatus();
+                            this.receivedItem(this.state.requestedItemName)
                         }}>
-                        <Text style={{color: '#ffff', fontSize:18, fontWeight:"bold"}}>Add Item</Text>
-                    </TouchableOpacity>   
-                </KeyboardAvoidingView>
-            </View>
-        );
+                        <Text>I recieved the Item </Text>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+        else{
+            return(
+                <View style={{flex:1}}>
+                    <MyHeader title = "Add Item"/>
+                    <KeyboardAvoidingView style={styles.keyBoardStyle}>
+                        <TextInput
+                            style={styles.formTextInput}
+                            placeholder='Item Name'
+                            onChangeText={(text)=>{
+                                this.setState({itemName:text})
+                            }}
+                            value = {this.state.itemName}
+                        />
+
+                        <TextInput
+                            style={[styles.formTextInput,{height:300,}]}
+                            multiline
+                            numberOfLines = {8} 
+                            placeholder='Descripition'
+                            onChangeText={(text)=>{
+                                this.setState({description:text})
+                            }}
+                            value = {this.state.description}
+                        />
+
+                        <TouchableOpacity 
+                            style={styles.button}
+                            onPress={()=>{
+                                this.addItem(this.state.itemName,this.state.description)
+                            }}>
+                            <Text style={{color: '#ffff', fontSize:18, fontWeight:"bold"}}>Add Item</Text>
+                        </TouchableOpacity>   
+                    </KeyboardAvoidingView>
+                </View>
+            );
+        }
     }
 }
 

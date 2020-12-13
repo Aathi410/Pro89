@@ -43,7 +43,8 @@ export default class SignUpAndLoginScreen extends React.Component{
                 last_name:this.state.lastName,
                 contact:this.state.contact,
                 user_name:this.state.username,
-                address:this.state.address
+                address:this.state.address,
+                IsBookRequestActive:false,
               })
               return  Alert.alert(
                     'User Added Successfully',
