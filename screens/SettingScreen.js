@@ -11,6 +11,7 @@ import {
 import MyHeader from '../components/MyHeader'
 import db from '../config'
 import firebase from 'firebase'
+import { RFValue } from "react-native-responsive-fontsize";
 
 export default class SettingScreen extends Component{
   constructor(){
@@ -136,22 +137,22 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   formTextInput:{
-    width:"75%",
-    height:35,
+    width:"70%",
+    height:40,
     alignSelf:'center',
-    borderColor:'#ffab91',
+    borderColor:'black',
     borderRadius:10,
-    borderWidth:1,
-    marginTop:20,
+    borderWidth:1.4,
+    marginTop:40,
     padding:10,
   },
   button:{
-    width:"75%",
-    height:50,
+    width:"30%",
+    height: RFValue(35),
     justifyContent:'center',
     alignItems:'center',
-    borderRadius:10,
-    backgroundColor:"#ff5722",
+    borderRadius:25,
+    backgroundColor:"#d61a3c",
     shadowColor: "#000",
     shadowOffset: {
        width: 0,
@@ -160,11 +161,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.44,
     shadowRadius: 10.32,
     elevation: 16,
-    marginTop:20
+    marginTop:55
   },
   buttonText:{
-    fontSize:25,
-    fontWeight:"bold",
-    color:"#fff"
+    fontSize:21,
+    fontWeight:"500",
+    color:"black"
   }
 })

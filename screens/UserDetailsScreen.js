@@ -11,7 +11,7 @@ export default class UserDetailsScreen extends React.Component{
     this.state={
       username        : firebase.auth().currentUser.email,
       receiverId      : this.props.navigation.getParam('details')["user_name"],
-      exchangeId       : this.props.navigation.getParam('details')["exchangeId"],
+      exchangeId       : this.props.navigation.getParam('details')["exchange_id"],
       itemName        : this.props.navigation.getParam('details')["item_name"],
       description  : this.props.navigation.getParam('details')["description"],
       recieverName    : '',
@@ -47,12 +47,12 @@ updateBarterStatus=()=>{
     exchange_id          : this.state.exchangeId,
     requested_by        : this.state.recieverName,
     donor_id            : this.state.username,
-    request_status      :  "Donor Interested"
+    request_status      :  "Person Interested"
   })
 }
 
 getUserDetails=(username)=>{
-  db.collection("users").where('email_id','==', username).get()
+  db.collection("users").where('user_name','==', username).get()
   .then((snapshot)=>{
     snapshot.forEach((doc) => {
       console.log(doc.data().first_name);
@@ -63,18 +63,7 @@ getUserDetails=(username)=>{
   })
 }
 
-addNotification = () =>{
-  var message = this.state.userName + " Has Shown Interest In Donationg The Item";
-  db.collection("all_notifications").add({
-    targeted_user_id : this.state.receiverId,
-    donor_id : this.state.username,
-    exchange_id : this.state.exchangeId,
-    item_name : this.state.itemName,
-    date : firebase.firestore.FieldValue.serverTimestamp(),
-    notification_status : "unread",
-    message : message,
-  })
-}
+
 
 componentDidMount(){
   this.getRecieverDetails()
@@ -87,10 +76,10 @@ componentDidMount(){
         <View style={{flex:0.1}}>
         <Header
             leftComponent={<Icon name="arrow-left" type="feather"
-            color="#696969" onPress={()=>this.props.navigation.goBack()}/>}
+            color="black" onPress={()=>this.props.navigation.goBack()}/>}
             centerComponent={{text:"Exchange",
-            style:{color:"#9085a9", fontSize:20,fontWeight:'bold'}}}
-            backgroundColor={"#eaf8fe"}
+            style:{color:"black", fontSize:23,fontWeight:'bold'}}}
+            backgroundColor={"#d61a3c"}
         />
         </View>
         <View style={{flex:0.3}}>
@@ -102,7 +91,7 @@ componentDidMount(){
               <Text style={{fontWeight:'bold'}}>Name : {this.state.itemName}</Text>
             </Card>
             <Card>
-              <Text style={{fontWeight:'bold'}}>Reason : {this.state.description}</Text>
+              <Text style={{fontWeight:'bold'}}>Descripition : {this.state.description}</Text>
             </Card>
           </Card>
         </View>
@@ -133,7 +122,7 @@ componentDidMount(){
                     this.addNotification()
                     this.props.navigation.navigate('MyBarters')
                   }}>
-                <Text>I Want To Exchange</Text>
+                <Text style={{fontSize:20, fontWeight:'500'}}>I Want To Exchange</Text>
               </TouchableOpacity>
             )
             : null
@@ -156,12 +145,12 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   button:{
-    width:200,
+    width:"28%",
     height:50,
     justifyContent:'center',
     alignItems : 'center',
-    borderRadius: 10,
-    backgroundColor: 'orange',
+    borderRadius: 20,
+    backgroundColor: '#d61a3c',
     shadowColor: "#000",
     shadowOffset: {
        width: 0,

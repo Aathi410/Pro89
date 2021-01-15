@@ -43,7 +43,7 @@ export default class BookDonateScreen extends React.Component{
                 style={styles.button}
                 onPress ={()=>{
                     this.props.navigation.navigate("UserDetails",{"details": item})}}>
-                <Text style={{color:'#ffff'}}>View</Text>
+                <Text style={{color:'black',fontWeight:"400", fontSize:17.5}}>View</Text>
               </TouchableOpacity>
             }
             bottomDivider
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
       height:30,
       justifyContent:'center',
       alignItems:'center',
-      backgroundColor:"#ff5722",
+      backgroundColor:"#d61a3c",
       shadowColor: "#000",
       shadowOffset: {
          width: 0,

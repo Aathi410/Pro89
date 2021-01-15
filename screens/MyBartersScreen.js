@@ -36,7 +36,7 @@ export default class MyBartersScreen extends Component {
     }
 
    getDonorDetais =(username)=>{
-    db.collection('users').where("email_id", "==",username).get()
+    db.collection('users').where("user_name", "==",username).get()
     .then((snapshot)=>{
       snapshot.forEach((doc)=>{
         this.setState({
@@ -48,9 +48,9 @@ export default class MyBartersScreen extends Component {
 
    sendItem = (itemDetails) => {
     if (itemDetails.request_status === "Item Sent"){
-      var requestStatus = "Donor Intersted"
+      var requestStatus = "Person Intersted"
       db.collection('all_Barters').doc(itemDetails.doc_id).update({
-        request_status:"Donor Interested"
+        request_status:"Person Interested"
       })
       this.sendNotification(itemDetails, requestStatus)
     }
@@ -76,7 +76,7 @@ export default class MyBartersScreen extends Component {
            message = this.state.donorName + " Sent You The Item"
          }
          else{
-          message = this.state.donorName + " Has Shown Interest In Donationg The Item"
+          message = this.state.donorName + " Has Shown Interest In Exchanging The Item"
          }
          db.collection('all_notifications').doc(doc.id).update({
            message : message,

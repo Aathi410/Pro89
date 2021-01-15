@@ -5,6 +5,8 @@ import {DrawerItems} from 'react-navigation-drawer';
 import firebase from 'firebase';
 import * as ImagePicker from 'expo-image-picker';
 import db from '../config';
+import { Icon } from "react-native-elements";
+import { RFValue } from "react-native-responsive-fontsize";
 
 export default class CustomSideBarMenu extends React.Component{
     state = {
@@ -75,32 +77,54 @@ export default class CustomSideBarMenu extends React.Component{
     render(){
         return(
             <View style={styles.container}>
-                <View style={{flex:0.3, alignItems:"center", backgroundColor:"orange"}}>
+                <View style={{flex:0.4, alignItems:"center", backgroundColor:"#d61a3c"}}>
                   <Avatar 
                     rounded
                     source={{uri:this.state.image}}
-                    size={'medium'}
+                    size={'xlarge'}
                     onPress={()=>{
                       this.selectPicture()
                     }}
                     containerStyle={styles.imageContainer}
                     showEditButton/>
-                    <Text style={{fontWeight:"bold", fontSize:20, marginTop:10, marginLeft: 20,}}>
+                    <Text style={{fontWeight:"400", fontSize: RFValue(20), marginTop:5, marginLeft: -10, padding: RFValue(10)}}>
                       {this.state.name}
                     </Text>
                 </View>
 
-                <View style={styles.drawerItemsContainer}>
+                <View style={{ flex: 0.6 }}>
                     <DrawerItems {...this.props}/>
                 </View>
-                <View style={styles.logOutContainer}>
+
+                <View style={{ flex: 0.1 }}>
                   <TouchableOpacity 
-                    style={styles.logOutButton}
+                   style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    height: "100%",
+                    }}
+
                     onPress={()=>{
                       this.props.navigation.navigate('SignUpAndLoginScreen')
                       firebase.auth().signOut()
                     }}>
-                    <Text>Log Out</Text>
+
+                    <Icon
+                      name="logout"
+                      type="antdesign"
+                      size={RFValue(18)}
+                      iconStyle={{ paddingLeft: RFValue(10) }}
+                    />
+
+                    <Text
+                      style={{
+                        fontSize: RFValue(15),
+                        fontWeight: "bold",
+                        marginLeft: RFValue(30),
+                      }}
+                    >
+                      Log Out
+                    </Text>
                   </TouchableOpacity>
                 </View>
             </View>
@@ -131,11 +155,6 @@ var styles = StyleSheet.create({
       fontWeight:'bold'
     },
     imageContainer:{ 
-      flex: 0.75,
-      width: "40%",
-      height: "20%",
-      marginLeft: 20,
-      marginTop: 30,
-      borderRadius: 40,
+      marginTop: 40
     },
   })

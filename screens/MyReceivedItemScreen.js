@@ -18,7 +18,7 @@ export default class MyReceivedItemScreen extends Component{
   getReceivedItemsList =()=>{
     this.requestRef = db.collection("exchange_requests")
     .where('user_name','==',this.state.userId)
-    .where("item_status", '==','received')
+    .where("item_status", '==','recieved')
     .onSnapshot((snapshot)=>{
       var receivedItemsList = snapshot.docs.map((doc) => doc.data())
       this.setState({

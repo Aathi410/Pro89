@@ -3,6 +3,7 @@ import {Text,View,TouchableOpacity, StyleSheet, Alert, TextInput,
 Modal, ScrollView, KeyboardAvoidingView} from 'react-native';
 import db from '../config';
 import firebase from 'firebase';
+import { RFValue } from "react-native-responsive-fontsize";
 
 export default class SignUpAndLoginScreen extends React.Component{
     constructor(){
@@ -44,7 +45,7 @@ export default class SignUpAndLoginScreen extends React.Component{
                 contact:this.state.contact,
                 user_name:this.state.username,
                 address:this.state.address,
-                IsBookRequestActive:false,
+                IsItemRequestActive:false,
               })
               return  Alert.alert(
                     'User Added Successfully',
@@ -159,7 +160,7 @@ export default class SignUpAndLoginScreen extends React.Component{
                       style={styles.cancelButton}
                       onPress={()=>this.setState({'isModalVisible':false})}
                     >
-                    <Text style={{color:'#ff5722'}}>Cancel</Text>
+                    <Text style={{color:"#d61a3c"}}>Cancel</Text>
                     </TouchableOpacity>
                   </View>
               </KeyboardAvoidingView>
@@ -179,7 +180,7 @@ export default class SignUpAndLoginScreen extends React.Component{
                 <Text style={styles.title}>Barter App</Text>
             
                 <View style={styles.profileContainer}>
-                    <Text style={{color:'#ff5722', fontSize:19, fontWeight:'bold', marginRight:213,}}>UserName</Text>    
+                    <Text style={{color:"black", fontSize:19, fontWeight:'500', marginRight:213,}}>User Email</Text>    
                     <TextInput
                         style={styles.loginBox}
                         keyboardType="email-address"
@@ -190,7 +191,7 @@ export default class SignUpAndLoginScreen extends React.Component{
                         }}
                     />
 
-                    <Text style={{marginTop:20,color:'#ff5722', fontSize:19, fontWeight:'bold', marginRight:215,}}>Password</Text>
+                    <Text style={{marginTop:20,color:"black", fontSize:19, fontWeight:'500', marginRight:215,}}>Password</Text>
                     <TextInput
                         style={styles.loginBox}
                         secureTextEntry={true}
@@ -227,7 +228,7 @@ export default class SignUpAndLoginScreen extends React.Component{
 const styles = StyleSheet.create({
     container:{
       flex:1,
-      backgroundColor:'#F8BE85'
+      backgroundColor:'#cc5500'
     },
     profileContainer:{
       flex:1,
@@ -240,11 +241,11 @@ const styles = StyleSheet.create({
       fontSize:65,
       fontWeight:'bold',
       paddingBottom:30,
-      color : '#ff3d00'
+      color : 'black'
     },
     loginBox:{
       width: 300,
-      height: 40,
+      height: RFValue(25),
       borderBottomWidth: 3,
       borderColor : '#000000',
       fontSize: 20,
@@ -253,11 +254,11 @@ const styles = StyleSheet.create({
     },
     button:{
       width:300,
-      height:50,
+      height:RFValue(33),
       justifyContent:'center',
       alignItems:'center',
       borderRadius:25,
-      backgroundColor:"#ff9800",
+      backgroundColor:"#d61a3c",
       shadowColor: "#000",
       shadowOffset: {
          width: 0,
@@ -268,8 +269,8 @@ const styles = StyleSheet.create({
       elevation: 16,
     },
     buttonText:{
-      color:'#ffff',
-      fontWeight:'200',
+      color:'black',
+      fontWeight:'400',
       fontSize:20
     },
     buttonContainer:{
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
       justifyContent:'center',
       alignSelf:'center',
       fontSize:30,
-      color:'#ff5722',
+      color:"#d61a3c",
       margin:50
     },
     modalContainer:{
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
       width:"75%",
       height:35,
       alignSelf:'center',
-      borderColor:'#ffab91',
+      borderColor:"#d61a3c",
       borderRadius:10,
       borderWidth:1,
       marginTop:20,
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     },
     registerButton:{
       width:200,
-      height:40,
+      height:RFValue(25),
       alignItems:'center',
       justifyContent:'center',
       borderWidth:1,
@@ -319,15 +320,16 @@ const styles = StyleSheet.create({
       marginTop:30
     },
     registerButtonText:{
-      color:'#ff5722',
+      color:"#d61a3c",
       fontSize:15,
       fontWeight:'bold'
     },
     cancelButton:{
       width:200,
-      height:30,
+      height:RFValue(15),
       justifyContent:'center',
       alignItems:'center',
       marginTop:5,
+      color:"#d61a3c"
     },
   })
