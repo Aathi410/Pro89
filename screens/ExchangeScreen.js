@@ -237,7 +237,7 @@ export default class BookRequestScreen extends React.Component{
         else{
             return(
                 <View style={{flex:1}}>
-                    <MyHeader title = "Add Item"/>
+                    <MyHeader title = "Add Item"  navigation = {this.props.navigation}/>
                     <KeyboardAvoidingView style={styles.keyBoardStyle}>
                         <TextInput
                             style={styles.formTextInput}
